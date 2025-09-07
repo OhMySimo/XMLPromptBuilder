@@ -1,0 +1,19 @@
+src/
+    lib/
+        types.ts
+        utils.ts
+        markdownParser.ts
+        xmlGenerator.ts
+        treeUtils.ts
+    components/
+        Toast.tsx
+        Tree.tsx
+        Editor.tsx
+    locales/
+        en.json
+        it.json
+    XMLPromptBuilder.tsx
+    main.tsx
+    App.tsx
+    styles.css
+    

@@ -1,0 +1,484 @@
+/* styles.css — redesigned for better contrast, hierarchy & accessibility */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* -------------------------
+   Theme variables + dark mode
+   ------------------------- */
+:root{
+  --bg-1: #f6fffb;
+  --bg-2: #eef8ff;
+  --card: #ffffff;
+  --muted: #475569;        /* stronger muted in light mode */
+  --accent: #06b6d4;
+  --accent-2: #0891b2;
+  --accent-contrast: #003741;
+  --danger: #ef4444;
+  --danger-contrast: #6b1212;
+  --shadow: 0 10px 30px rgba(2,6,23,0.06);
+  --glass: rgba(255,255,255,0.75);
+  --radius: 12px;
+  --code-bg: linear-gradient(180deg, rgba(15,23,42,0.06), rgba(15,23,42,0.02));
+  --code-fg: #0b1220;
+  --code-tag: #065fcb;     /* usable blue */
+  --code-attr: #b45309;    /* warm amber */
+  --code-val: #15803d;     /* green */
+  --focus: 3px rgba(6,182,212,0.14);
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* dark theme overrides */
+.dark {
+  --bg-1: #0b1220;
+  --bg-2: #071227;
+  --card: #07122a;
+  --muted: #9aa4b2;
+  --accent: #06b6d4;
+  --accent-2: #0ea5a4;
+  --accent-contrast: #00282a;
+  --danger: #ff6b6b;
+  --danger-contrast: #7b1b1b;
+  --shadow: 0 10px 40px rgba(2,6,23,0.6);
+  --glass: rgba(255,255,255,0.03);
+  --radius: 12px;
+  --code-bg: linear-gradient(180deg, rgba(2,6,23,0.40), rgba(2,6,23,0.20));
+  --code-fg: #dbeafe;
+  --code-tag: #60a5fa;
+  --code-attr: #fbbf24;
+  --code-val: #34d399;
+  --focus: 3px rgba(6,182,212,0.18);
+  color-scheme: dark;
+}
+
+/* -------------------------
+   Base / Layout
+   ------------------------- */
+* { box-sizing: border-box }
+html, body, #root { height: 100% }
+body {
+  margin: 0;
+  padding: 24px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--code-fg);
+}
+
+/* container card style (cleaner glass aesthetic) */
+.card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--card));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* subtle page header description */
+.header-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* -------------------------
+   Buttons: clearer hierarchy
+   ------------------------- */
+.btn {
+  font-family: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+  box-shadow: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+/* primary (save / success) */
+.btn.primary {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
+  box-shadow: 0 6px 22px rgba(6,182,212,0.08);
+}
+.btn.primary:hover { transform: translateY(-2px) }
+.btn.primary:active { transform: translateY(0) }
+
+/* outline / neutral */
+.btn.ghost {
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  color: var(--muted);
+}
+.btn.ghost:hover {
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  transform: translateY(-1px);
+}
+
+/* destructive button — clearly filled and prominent */
+.btn.danger {
+  background: linear-gradient(90deg, var(--danger), #ff4d4d);
+  color: white;
+  border: 0;
+  box-shadow: 0 6px 18px rgba(239,68,68,0.08);
+}
+.btn.danger.ghost-style {
+  /* if you really need a "danger-outline", this style is available */
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(239,68,68,0.12);
+}
+
+/* small variants */
+.btn.small { padding: 6px 8px; font-size: 13px; border-radius: 8px; }
+
+/* accessible keyboard focus */
+.btn:focus-visible, button:focus-visible, a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus);
+  border-radius: 10px;
+}
+
+/* -------------------------
+   Tree / left panel
+   ------------------------- */
+.tree {
+  max-height: 560px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+  border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* larger/tappable icon area */
+.tree .node-actions, .tree .node-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tree .node-action-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px;
+  min-width:36px;
+  min-height:36px;
+  border-radius:8px;
+  cursor:pointer;
+  transition: background .12s ease, transform .08s ease;
+}
+.tree .node-action-btn:hover { background: rgba(15,23,42,0.03); transform: translateY(-1px) }
+.tree .node-action-btn:active { transform: translateY(0) }
+
+/* selected node highlight */
+.tree .node.selected {
+  background: linear-gradient(90deg, rgba(6,182,212,0.04), rgba(6,182,212,0.02));
+  border-radius: 8px;
+}
+
+/* small readable tag label */
+.tree .tag-label { font-size: 14px; color: var(--muted); }
+
+/* -------------------------
+   Editor area
+   ------------------------- */
+.editor .label { display:block; margin-bottom:8px; font-size:13px; color:var(--muted) }
+.input, .textarea {
+  width:100%;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.06);
+  padding:12px;
+  background: rgba(255,255,255,0.02);
+  font-size:14px;
+  font-family: inherit;
+  resize: vertical;
+  box-shadow: none;
+  color: inherit;
+}
+.textarea { min-height:180px }
+
+/* helper controls row */
+.controls-row { display:flex; gap:10px; align-items:center; }
+
+/* checkbox labels clearer */
+.checkbox-label { display:inline-flex; gap:8px; align-items:center; color:var(--muted); font-size:13px; }
+
+/* -------------------------
+   Generated XML output
+   ------------------------- */
+.xml-output {
+  background: var(--code-bg);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 8px;
+  max-height: 260px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  color: var(--code-fg);
+  white-space: pre;
+  border: 1px solid rgba(15,23,42,0.06);
+  line-height: 1.5;
+}
+
+/* expanded view */
+.xml-output.expanded { max-height: 640px }
+
+/* Accessible syntax coloring (high contrast) */
+.xml-angle { color: var(--muted); font-weight: 600; }
+.xml-tag { color: var(--code-tag); font-weight: 700; }
+.xml-attr-name { color: var(--code-attr); font-weight: 700; }
+.xml-attr-value { color: var(--code-val); font-weight: 600; }
+.xml-attrs { color: rgba(255,255,255,0.55); }
+
+/* make sure <pre> code is selectable easily */
+.xml-output code { user-select: text; }
+
+/* Expand/collapse buttons in header */
+.card .card-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; }
+
+/* status bar below xml with readable colors */
+.xml-status {
+  padding: 12px;
+  border-top: 1px solid rgba(15,23,42,0.04);
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-size: 13px;
+}
+
+/* success / error variants */
+.xml-status.ok { background: linear-gradient(180deg, rgba(34,197,94,0.06), rgba(34,197,94,0.03)); color: #065f46; border-top-color: rgba(34,197,94,0.12) }
+.xml-status.err { background: linear-gradient(180deg, rgba(239,68,68,0.06), rgba(239,68,68,0.03)); color: #7f1d1d; border-top-color: rgba(239,68,68,0.12) }
+
+/* -------------------------
+   Toasts
+   ------------------------- */
+.toast-root { position: fixed; right: 18px; top: 18px; z-index: 60; display:flex; flex-direction:column; gap:10px; }
+.toast {
+  min-width: 160px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: white;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: all .24s ease;
+  font-size: 14px;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.12);
+}
+.toast.visible { opacity: 1; transform: none; }
+.toast.success { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.toast.info { background: #2563eb }
+.toast.error { background: linear-gradient(90deg, var(--danger), #ff7b7b) }
+
+/* -------------------------
+   Modal / Confirmation dialog
+   ------------------------- */
+.modal-backdrop {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  background: rgba(2,6,23,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.confirm-modal {
+  width: min(720px, 92%);
+  max-width: 880px;
+  border-radius: 14px;
+  padding: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--card));
+  box-shadow: 0 18px 40px rgba(2,6,23,0.45);
+  border: 1px solid rgba(15,23,42,0.06);
+  animation: fadeIn .18s ease both;
+}
+
+/* modal title and body */
+.confirm-modal .modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--code-fg);
+  margin-bottom: 8px;
+}
+.confirm-modal .modal-body {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+/* action row — right aligned */
+.confirm-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ensure cancel is clearly secondary and destructive is prominent */
+.confirm-modal .btn.cancel {
+  background: transparent;
+  border: 1px solid rgba(15,23,42,0.06);
+  color: var(--muted);
+  padding: 10px 14px;
+}
+.confirm-modal .btn.confirm-danger {
+  background: linear-gradient(90deg, var(--danger), #ff4d4d);
+  color: white;
+  padding: 10px 14px;
+  box-shadow: 0 8px 26px rgba(239,68,68,0.12);
+}
+
+/* subtle icon in danger button */
+.confirm-modal .btn.confirm-danger::before {
+  content: "⚠️";
+  margin-right: 8px;
+  transform: translateY(-1px);
+}
+
+/* -------------------------
+   Animations
+   ------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px) scale(.99); }
+  to { opacity: 1; transform: none; }
+}
+.animate-fadeIn { animation: fadeIn .18s ease both; }
+
+/* -------------------------
+   Small helpers & accessibility
+   ------------------------- */
+.small { font-size: 12px }
+.muted { color: var(--muted) }
+.label code { background: rgba(15,23,42,0.04); padding: 2px 6px; border-radius: 6px }
+
+/* ensure text selection in editors is readable */
+.input::selection, .textarea::selection, .xml-output ::selection {
+  background: rgba(6,182,212,0.12);
+}
+
+/* responsive tweaks */
+@media (max-width: 768px) {
+  .card { padding: 14px; }
+  .btn { padding: 8px 10px; font-size: 13px; }
+  .confirm-modal { padding: 16px; border-radius: 12px; }
+}
+
+/* makes left tree consistent with other cards */
+.tree {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--card));
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 8px 26px rgba(2,6,23,0.06);
+}
+
+/* slightly bolder XML for better legibility */
+.xml-output {
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+/* header spacing */
+header .flex.items-center.gap-3 { gap: 14px; }
+
+/* tooltips: small helper (pure CSS fallback) */
+.node-action-btn[title] { position: relative; }
+.node-action-btn[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  z-index: 100;
+}
+
+/* ---------------------------
+   Dark-mode tweaks for sidebar
+   (fixes contrast for .bg-white, .bg-sky-50, .text-slate-*)
+   --------------------------- */
+
+/* Make "bg-white" elements look like cards in dark mode */
+.dark .bg-white {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--card));
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.55);
+  color: var(--code-fg);
+}
+
+/* Adjust small text / icon colors used by tailwind slate classes */
+.dark .text-slate-500 { color: rgba(255,255,255,0.70) !important; }
+.dark .text-slate-400 { color: rgba(255,255,255,0.56) !important; }
+
+/* Selected row currently uses bg-sky-50 + border-sky-100 in HTML.
+   Make that an appropriate subtle highlight in dark mode. */
+.dark .bg-sky-50 {
+  background: linear-gradient(90deg, rgba(6,182,212,0.03), rgba(6,182,212,0.02));
+  border: 1px solid rgba(6,182,212,0.06);
+  color: var(--code-fg);
+}
+.dark .border-sky-100 {
+  border-color: rgba(6,182,212,0.06) !important;
+}
+
+/* Hover states: avoid bright white hover in dark mode.
+   Tailwind's compiled class is `hover:bg-slate-50` so escape the colon. */
+.dark .hover\:bg-slate-50:hover {
+  background: rgba(255,255,255,0.02) !important;
+}
+
+/* Make grouped nodes / chevrons a bit lighter for clarity */
+.dark .lucide-chevron-down,
+.dark .lucide-file-text {
+  color: rgba(255,255,255,0.62);
+}
+
+/* Action buttons inside tree: larger hit area and subtle hover in dark */
+.dark .p-1.rounded:hover { background: rgba(255,255,255,0.02); }
+
+/* Ensure nested indent rails remain legible */
+.dark .tree .tag-label,
+.dark .tree .text-sm { color: rgba(255,255,255,0.78) !important; font-weight: 600; }
+
+/* Ensure disabled/low-emphasis elements (like placeholder icons) are still visible */
+.dark .tree div[style] { /* small inline placeholder boxes used in markup */
+  background: rgba(255,255,255,0.04);
+}
+
+/* If you want to force icons that relied on 'currentColor' to use the muted tone */
+.dark .bg-white svg,
+.dark .bg-sky-50 svg,
+.dark .tree svg { color: rgba(255,255,255,0.66); }
+
+/* Keep accessibility: ensure focus outlines are visible on sidebar items */
+.dark .tree [role="button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus);
+  border-radius: 8px;
+}
+
+/* Slight spacing fix so the Add-root button doesn't flash white too brightly */
+.dark button[title="Add root element"]:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Optional: if you want the 'Add root' button to visually match .btn.ghost in dark mode */
+.dark button[title="Add root element"] {
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--muted);
+  background: transparent;
+}

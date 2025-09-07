@@ -1,0 +1,99 @@
+<migration-guide>
+  <introduction>
+    Convert Markdown docs into XML by mapping elements. 
+    Goal: structured, machine-readable, easy to process.
+  </introduction>
+
+  <target-structure>
+    <document-root>
+      <example>
+        # My Title
+        Lorem ipsum etc...
+        =
+        <my_title>Lorem ipsum etc...</my_title>
+      </example>
+    </document-root>
+
+    <headings>
+      <1>Map H1-H6 to XML tags named after heading text</1>
+      <2>Lowercase, replace spaces with underscores</2>
+    </headings>
+
+    <paragraphs>
+      <example>
+        This is some text.
+        =
+        <p>This is some text.</p>
+      </example>
+    </paragraphs>
+
+    <emphasis>
+      Keep emphasis with "*" symbol:
+      **Important** = **Important**
+    </emphasis>
+
+    <lists>
+      <example>
+        1. Step one = <1>Step one</1>
+        2) Step two = <2>Step two</2>
+        # 3 Step three = <3>Step three</3>
+        - Bullet example = <4>Bullet example</4> (automatically detected the order number)
+      </example>
+    </lists>
+
+    <code>
+      <1>Inline → `inline code` = <code><![CDATA[inline code]]></code></1>
+      <2>Block → ```lang ...``` = <pre><code language="lang"><![CDATA[...]]></code></pre></2>
+    </code>
+
+    <blockquote>
+      > Knowledge is power.  
+      =
+      <blockquote><p>Knowledge is power.</p></blockquote>
+    </blockquote>
+
+    <hrules>
+      --- = <hr/>
+    </hrules>
+
+    <tables>
+      <example>
+        | Name | Age |  
+        | ---  | --- |  
+        | Alice | 30 |  
+        =
+        <table>
+          <thead><tr><th>Name</th><th>Age</th></tr></thead>
+          <tbody><tr><td>Alice</td><td>30</td></tr></tbody>
+        </table>
+      </example>
+    </tables>
+
+    <links>
+      <example>
+        [Google](https://www.google.com)  
+        =
+        <a href="https://www.google.com">Google</a>
+      </example>
+    </links>
+
+    <images>
+      <example>
+        ![Logo](logo.png)  
+        =
+        <img src="logo.png" alt="Logo"/>
+      </example>
+    </images>
+  </target-structure>
+
+  <migration-plan>
+    <1>Parse Markdown into AST</1>
+    <2>Transform AST → XML structure</2>
+    <3>Validate XML with XSD/DTD</3>
+    <4>Post-process (XSLT, DB import, CMS integration)</4>
+  </migration-plan>
+
+  <conclusion>
+    Clear rules + migration plan → reusable, structured, machine-friendly docs.
+  </conclusion>
+</migration-guide>
