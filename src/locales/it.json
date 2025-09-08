@@ -1,7 +1,9 @@
 {
   "title": "Generatore di Prompt XML",
+  "subtitle": "Crea strutture XML personalizzate per i tuoi prompt AI in modo semplice e intuitivo.",
+  "language": "Seleziona Lingua",
   "structure": "Struttura",
-  "addRoot": "Aggiungi radice",
+  "addElement": "Aggiungi Tag +",
   "noElements": "Nessun elemento — aggiungine uno per iniziare.",
   "tagName": "Nome tag",
   "content": "Contenuto",
@@ -19,6 +21,8 @@
   "elementDeleted": "Elemento eliminato",
   "copied": "XML copiato",
   "noParsedContent": "Nessun contenuto parsato",
+  "import": "Importa",
+  "copyXML": "Copia XML",
   "importedNodes": "Importati {{n}} nodi",
   "confirmDeleteTitle": "Eliminare elemento?",
   "confirmDeleteBody": "Sei sicuro di voler eliminare questo elemento e tutti i suoi figli?",
@@ -30,5 +34,15 @@
   "themeSystem": "Sistema",
   "moveUp": "Sposta su",
   "moveDown": "Sposta giù",
-  "clearAll": "Pulisci tutto"
+  "clear": "Pulisci",
+  "delete": "Elimina",
+  "elements": "XML tags",
+  "tokens": "Tokens",
+  "validationOk": "Tutti i tag sono validi ✔",
+  "validationErrors": "Ci sono {{count}} errori di validazione",
+  "Turning on Code block will wrap content in a CDATA section and disable auto-childing for this tag.": "Attivando \"Forza come codice (CDATA)\", il contenuto verrà racchiuso in una sezione CDATA e verrà disabilitato il childing automatico per questo tag.",
+  "editor": "Editor XML",
+  "xmlStructure": "Struttura XML",
+  "generatedXML": "XML generato",
+  "pasteImportPrompt": "Incolla qui il tuo XML per importarlo nella struttura"
 }

@@ -59,7 +59,7 @@
 html, body, #root { height: 100% }
 body {
   margin: 0;
-  padding: 24px;
+  padding: 16px;
   min-height: 100vh;
   background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
   -webkit-font-smoothing: antialiased;
@@ -481,4 +481,13 @@ header .flex.items-center.gap-3 { gap: 14px; }
   border: 1px solid rgba(255,255,255,0.04);
   color: var(--muted);
   background: transparent;
+}
+
+.py-1 {
+  font-size: 9.5pt;
+  background-color: rgba(255,255,255,0.68);
+} 
+
+.from-blue-50 {
+	border-radius: 23px;
 }
