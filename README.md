@@ -1,4 +1,4 @@
-# Tutorial: XMLPromptBuilder
+# XMLPromptBuilder
 
 This project, **XMLPromptBuilder**, provides a user-friendly interface for building complex XML prompts. It allows users to create and manage *hierarchical structures* of XML elements using an interactive tree view and a detailed editor. You can *easily convert Markdown* content into structured elements and *generate the final XML output* for your AI prompts.
 
