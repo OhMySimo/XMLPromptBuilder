@@ -1114,26 +1114,37 @@ Let's look at how the `XMLPromptBuilder` uses these utilities, focusing on the `
 
 ### The Flow of Interaction: Deleting an Element
 
+When you click the delete button for an element in the Tree View, here's what happens to safely remove it from your XML structure:
+
 ```mermaid
 sequenceDiagram
     participant User
     participant Tree View (components/Tree.tsx)
     participant XMLPromptBuilder App (XMLPromptBuilder.tsx)
     participant Tree Utilities (lib/treeUtils.ts)
-    participant ElementNode Data (App's state)
+    participant ElementNode Data (in App's state)
+    participant XML Generator (lib/xmlGenerator.ts)
+    participant XML Output (UI)
 
     User->>Tree View: Clicks "Delete" icon for an element
-    Tree View->>XMLPromptBuilder App: Calls onDelete(elementId)
+    Tree View->>XMLPromptBuilder App: Calls onDelete function with elementId
     XMLPromptBuilder App->>XMLPromptBuilder App: Calls requestDelete(elementId)
-    XMLPromptBuilder App->>User: Displays confirmation modal
+    XMLPromptBuilder App->>User: Displays confirmation modal ("Are you sure?")
+    
     User->>XMLPromptBuilder App: Clicks "Delete" in confirmation modal
     XMLPromptBuilder App->>XMLPromptBuilder App: Calls deleteElementConfirmed(elementId)
     XMLPromptBuilder App->>Tree Utilities: Calls removeById(currentElements, elementId)
-    Tree Utilities->>Tree Utilities: Recursively searches and creates a new list without the element
+    Tree Utilities->>Tree Utilities: Recursively searches tree and creates new list without the element
     Tree Utilities->>XMLPromptBuilder App: Returns { removed: ElementNode, list: newElements }
     XMLPromptBuilder App->>ElementNode Data: Updates 'elements' state with newElements
+    Note over XMLPromptBuilder App: If deleted element was selected, clears selectedId state
     Note over XMLPromptBuilder App: React re-renders components dependent on 'elements'
-    XMLPromptBuilder App->>User: Tree View updates; Element is gone
+    XMLPromptBuilder App->>Tree View: Rerenders with element removed from tree
+    XMLPromptBuilder App->>XML Generator: Triggers XML generation with updated data
+    XML Generator->>XMLPromptBuilder App: Returns new XML string without deleted element
+    XMLPromptBuilder App->>XML Output: Displays the updated XML
+    Tree View->>User: Element is gone from the tree structure
+    XML Output->>User: Generated XML no longer contains the deleted element
 ```
 
 ### The Code Behind the Utilities (`src/lib/treeUtils.ts`)
