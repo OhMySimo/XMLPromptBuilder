@@ -1143,26 +1143,145 @@ The `src/lib/treeUtils.ts` file contains the pure JavaScript functions that perf
 1.  **`clone(list: ElementNode[])`**
     This utility (actually defined in `src/lib/utils.ts` but heavily used by `treeUtils`) creates a deep copy of your `ElementNode` array. "Deep copy" means it copies not just the top-level elements, but also all their children, grandchildren, and so on. This ensures that any modifications made by the `treeUtils` functions are on a fresh copy, leaving the original state untouched until `setElements` is called.
 
+    ```typescript
+    // src/lib/utils.ts (simplified)
+    import type { ElementNode } from './types';
+
+    // This makes a completely new copy of the array and all its nested objects.
+    export function clone<T>(obj: T): T {
+      return JSON.parse(JSON.stringify(obj));
+    }
+    ```
     This function uses a simple but effective trick (`JSON.parse(JSON.stringify(obj))`) to create a completely new copy of your data structure.
 
 2.  **`findById(id: string | null, list: ElementNode[])`**
     This function helps the application find a specific `ElementNode` anywhere in the nested tree by its unique `id`.
 
+    ```typescript
+    // src/lib/treeUtils.ts (simplified)
+    import type { ElementNode } from './types';
+
+    export function findById(id: string | null, list: ElementNode[]): ElementNode | null {
+      if (!id) return null; // If no ID, nothing to find
+      for (const el of list) {
+        if (el.id === id) return el; // Found it!
+        if (el.children) {
+          // If this element has children, look inside them too (recursion!)
+          const found = findById(id, el.children);
+          if (found) return found; // Found in children
+        }
+      }
+      return null; // Not found anywhere
+    }
+    ```
     This function uses a technique called **recursion**. It checks the current list, and if it doesn't find the `id`, it calls itself (`findById`) on the `children` list of each element. This allows it to search through any level of nesting.
 
 3.  **`removeById(list: ElementNode[], id: string)`**
     This function removes an `ElementNode` (and all its descendants) from the tree.
 
+    ```typescript
+    // src/lib/treeUtils.ts (simplified)
+    import { clone } from './utils'; // Need clone to work on a copy
+
+    export function removeById(list: ElementNode[], id: string): { removed: ElementNode | null; list: ElementNode[] } {
+      let removed: ElementNode | null = null;
+      function recurse(arr: ElementNode[]): ElementNode[] {
+        return arr.filter(el => {
+          if (el.id === id) {
+            removed = el; // Keep track of the removed element
+            return false; // This element should NOT be in the new list
+          }
+          // Recursively filter children too
+          el.children = recurse(el.children || []);
+          return true; // Keep this element
+        });
+      }
+      const newList = recurse(clone(list)); // Start with a cloned copy
+      return { removed, list: newList };
+    }
+    ```
     Again, recursion is used. The `filter` method creates a new array without the matching element. For elements that are kept, their `children` list is also recursively processed to ensure any children of the removed element are handled, or children further down the tree are kept if their parent is kept.
 
 4.  **`insertAsChild(list: ElementNode[], parentId: string | null, node: ElementNode)`**
     This function adds a new `ElementNode` as a child of a specified parent. If `parentId` is `null`, it adds the node as a new top-level element.
 
+    ```typescript
+    // src/lib/treeUtils.ts (simplified)
+    import { clone } from './utils';
+
+    export function insertAsChild(list: ElementNode[], parentId: string | null, node: ElementNode) {
+      const cloned = clone(list); // Always work on a copy!
+      if (!parentId) {
+        cloned.push(node); // Add as a top-level element if no parentId
+        return cloned;
+      }
+
+      function recurse(arr: ElementNode[]): boolean {
+        for (const el of arr) {
+          if (el.id === parentId) {
+            el.children = el.children || []; // Ensure children array exists
+            el.children.push(node);         // Add the new node here
+            return true; // Found the parent and added the child
+          }
+          if (el.children && recurse(el.children)) return true; // Look in children
+        }
+        return false; // Parent not found
+      }
+      recurse(cloned);
+      return cloned;
+    }
+    ```
     This function first clones the list. If a `parentId` is provided, it recursively searches for that parent. Once found, it adds the `node` to the parent's `children` array. If no `parentId`, it simply adds the node to the top-level list.
 
 5.  **`moveUpById(list: ElementNode[], id: string)` and `moveDownById(list: ElementNode[], id: string)`**
     These functions reorder an element among its siblings. `moveUpById` swaps an element with the one immediately before it, and `moveDownById` swaps it with the one immediately after.
 
+    ```typescript
+    // src/lib/treeUtils.ts (simplified)
+    import { clone } from './utils';
+
+    export function moveUpById(list: ElementNode[], id: string): ElementNode[] {
+      const cloned = clone(list); // Get a copy
+      function recurse(arr: ElementNode[]): boolean {
+        for (let i = 0; i < arr.length; i++) {
+          const el = arr[i];
+          if (el.id === id) {
+            if (i === 0) return false; // Already at the top, cannot move up
+            const tmp = arr[i - 1];   // Store the element above
+            arr[i - 1] = el;          // Move current element up
+            arr[i] = tmp;             // Move the element above down
+            return true;
+          }
+          if (el.children && recurse(el.children)) return true; // Look in children
+        }
+        return false;
+      }
+      recurse(cloned);
+      return cloned;
+    }
+
+    // moveDownById is very similar, just swaps with arr[i+1]
+    export function moveDownById(list: ElementNode[], id: string): ElementNode[] {
+      // ... similar recursive logic, but swapping with i+1 ...
+      const cloned = clone(list);
+      function recurse(arr: ElementNode[]): boolean {
+          for (let i = 0; i < arr.length; i++) {
+              const el = arr[i];
+              if (el.id === id) {
+                  if (i >= arr.length - 1) return false; // Already at bottom
+                  const tmp = arr[i + 1];
+                  arr[i + 1] = el;
+                  arr[i] = tmp;
+                  return true;
+              }
+              if (el.children && recurse(el.children)) return true;
+          }
+          return false;
+      }
+      recurse(cloned);
+      return cloned;
+    }
+    ```
     These functions also use recursion to find the correct `ElementNode`. Once found, they perform a simple swap with their adjacent sibling in the array, making sure they don't try to move an element if it's already at the top or bottom of its sibling group.
 
 6.  **`clearAll(list: ElementNode[])`**
@@ -1179,6 +1298,39 @@ The `src/lib/treeUtils.ts` file contains the pure JavaScript functions that perf
 
 The [Application Core Logic](06_application_core_logic_.md) (`src/XMLPromptBuilder.tsx`) uses these utilities extensively. When an action occurs, it calls the appropriate `treeUtils` function and then updates its main `elements` state with the new list returned by the utility.
 
+```typescript
+// src/XMLPromptBuilder.tsx (simplified relevant parts)
+import { removeById, insertAsChild, findById, moveUpById, moveDownById, clearAll } from './lib/treeUtils';
+import { clone } from './lib/utils'; // clone is used by treeUtils, but also directly by XMLPromptBuilder sometimes
+
+function AppInner() {
+  const [elements, setElements] = useState<ElementNode[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  // Example: Calling removeById
+  function deleteElementConfirmed(id: string) {
+    const { list } = removeById(elements, id); // Call the utility!
+    setElements(list); // Update state with the NEW list from the utility
+    if (selectedId === id) setSelectedId(null);
+  }
+
+  // Example: Calling insertAsChild
+  function addElement(parentId: string | null = null, template?: Partial<ElementNode>) {
+    const newEl: ElementNode = { id: uid(), tagName: template?.tagName || 'new_tag', content: template?.content || '', children: [], /* ... */ };
+    setElements(prev => parentId ? insertAsChild(prev, parentId, newEl) : [...prev, newEl]); // Use insertAsChild
+    setSelectedId(newEl.id);
+  }
+
+  // Example: Calling moveUpById
+  function handleMoveUp(id: string) {
+    setElements(prev => moveUpById(prev, id)); // Use moveUpById
+  }
+
+  // Find the selected element for the Editor
+  const selectedElement = findById(selectedId, elements); // Use findById
+  // ... other logic ...
+}
+```
 As you can see, the main application component doesn't need to know the complex details of how to find an element deep in a nested array or how to perform a swap. It just calls the appropriate `treeUtils` function, trusts it to return a correctly modified *new* array, and then updates its `elements` state with that new array. This makes the core logic much cleaner and easier to manage.
 
 ## Conclusion
